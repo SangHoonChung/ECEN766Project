@@ -53,3 +53,7 @@ Initial results evaluating the re-implemented models on the METABRIC cohort usin
 * **Sang Hoon Chung** - Evaluation and Experimental Analysis Lead 
 
 *(Texas A&M University - ECEN 766 Final Project)* 
+### Large data upload
+HiSeqV2 file and data_mma_illlumina_microarray file is in Zenodo
+*https://doi.org/10.5281/zenodo.19359791
+
