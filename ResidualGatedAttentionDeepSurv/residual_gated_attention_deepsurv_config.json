@@ -1,0 +1,19 @@
+{
+  "model_class": "ResidualGatedAttentionDeepSurv",
+  "n_features": 3000,
+  "gate_hidden": 128,
+  "proj_hidden": 64,
+  "hidden_layers_sizes": [
+    64
+  ],
+  "dropout": 0.6,
+  "gate_activation": "sigmoid",
+  "gate_temperature": 1.0,
+  "gate_sparsity_lambda": 0.0,
+  "standardize": false,
+  "n_epochs": 200,
+  "learning_rate": 0.0003,
+  "weight_decay": 0.003,
+  "gradient_clip": 1.0,
+  "early_stopping_patience": 20
+}

@@ -1,0 +1,13 @@
+{
+  "model_class": "AttentionDeepSurv",
+  "n_features": 500,
+  "d_model": 8,
+  "n_heads": 1,
+  "n_attn_layers": 1,
+  "hidden_layers_sizes": [
+    32
+  ],
+  "dropout": 0.4,
+  "use_feature_pooling": true,
+  "standardize": false
+}

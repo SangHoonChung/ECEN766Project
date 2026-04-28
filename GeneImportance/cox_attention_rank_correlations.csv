@@ -1,0 +1,5 @@
+attention_model,attention_rank,cox_reference,cox_rank,spearman_corr,p_value
+Residual Gated Attention,residual_rank,Cox abs(logHR) rank,cox_rank_abs_logHR,0.1133757561654591,4.744034001553141e-10
+Residual Gated Attention,residual_rank,Cox p-value rank,cox_rank_p,0.11582075243739702,1.9844134640837207e-10
+Gated Attention,gated_rank,Cox abs(logHR) rank,cox_rank_abs_logHR,0.14170386245877487,6.310447174230326e-15
+Gated Attention,gated_rank,Cox p-value rank,cox_rank_p,0.14269656701385072,4.069412288062829e-15
