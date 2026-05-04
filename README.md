@@ -29,7 +29,7 @@ The model is trained and evaluated using the **Molecular Taxonomy of Breast Canc
 **Note: Due to dataset size and access constraints, the raw METABRIC gene-expression data is not directly included in this repository. Please refer to the documentation for data access instructions.**
 
 ### 🧠 Methodology & Architectures
-![Gated Attention Architecture](Figures/GatedAttention_RisidualGatedAttention.png)
+![Attention DeepSurv Pipeline](Figures/GatedAttention_ResidualGatedAttention.png)
 Our pipeline evaluates standard baselines and proposes three attention-based architectures to solve the "black box" problem:
 
 1. **Cox PH Baseline:** Traditional linear model with L2 regularization to handle high-dimensional ($p \gg n$) data.
