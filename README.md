@@ -29,7 +29,7 @@ The model is trained and evaluated using the **Molecular Taxonomy of Breast Canc
 **Note: Due to dataset size and access constraints, the raw METABRIC gene-expression data is not directly included in this repository. Please refer to the documentation for data access instructions.**
 
 ### 🧠 Methodology & Architectures
-
+![Gated Attention Architecture](Figures/GatedAttention_RisidualGatedAttention.png)
 Our pipeline evaluates standard baselines and proposes three attention-based architectures to solve the "black box" problem:
 
 1. **Cox PH Baseline:** Traditional linear model with L2 regularization to handle high-dimensional ($p \gg n$) data.
@@ -44,17 +44,34 @@ Our pipeline evaluates standard baselines and proposes three attention-based arc
 * **Risk Stratification:** Patients are stratified into high-risk and low-risk groups, evaluated using Kaplan-Meier survival curves and log-rank tests.
 * **Interpretability Benchmarks:** Validated via statistical consistency (Spearman correlation with univariate Cox hazard ratios) and Pathway-Level Validation (Gene Set Enrichment Analysis).
 
-### Preliminary Results
-Initial results evaluating the re-implemented models on the METABRIC cohort using the C-index:
+### 📊 Results
 
-| Model | Split | C-index |
-| :--- | :--- | :--- |
-| DeepSurv (PyTorch) | Train | 0.9082 |
-| DeepSurv (PyTorch) | Validation | 0.6303 |
-| DeepSurv (PyTorch) | Test | 0.6543 |
-| Cox PH | Train | 0.8721 |
-| Cox PH | Validation | 0.6333 |
-| Cox PH | Test | 0.6500 |
+### Predictive Performance (C-Index)
+| Model | Train C-Index | Val C-Index | Test C-Index |
+| :--- | :--- | :--- | :--- |
+| **Cox PH (with L2 Regularization)** | 0.8721 | 0.6333 | 0.6500 |
+| **DeepSurv Baseline** | 0.9082 | 0.6303 | 0.6543 |
+| **Feature-wise Self-Attention DeepSurv** *(500 genes)* | 0.7806 | 0.6075 | 0.6107 |
+| **Gated Attention DeepSurv** | 0.8203 | 0.6296 | **0.6660** |
+| **Residual Gated Attention DeepSurv** | 0.8175 | **0.6507** | 0.6615 |
+
+**Conclusion:** Gated Attention DeepSurv achieved the highest test predictive performance (C-Index: 0.6660). However, **Residual Gated Attention** demonstrated superior validation stability (Val C-Index: 0.6507) and smoother training dynamics, significantly delaying overfitting compared to the standard gated model.
+
+### Interpretability Analysis: Gene Ranking Overlap
+Because attention weights can be model-dependent, we analyzed the stability of the learned gene importance by comparing the top-ranked genes from both the Gated Attention and Residual Gated Attention models. 
+
+**Top-k overlap between Gated Attention and Residual Gated Attention gene rankings:**
+
+| Top-k | Shared genes | Overlap rate | Jaccard index |
+| :--- | :--- | :--- | :--- |
+| **10** | 0 | 0.000 | 0.000 |
+| **20** | 0 | 0.000 | 0.000 |
+| **50** | 3 | 0.060 | 0.031 |
+| **100** | 9 | 0.090 | 0.047 |
+| **200** | 19 | 0.095 | 0.050 |
+| **500** | 105 | 0.210 | 0.117 |
+
+**Insight:** The low overlap in the top rankings indicates that attention weights should be interpreted carefully as model-dependent feature-importance signals rather than absolute biological truth. This motivated our further downstream analyses, including Perturbation Validation and Pathway Enrichment, to extract robust, pathway-level biological insights from these attention rankings.
 ### 🔬 Biological Interpretability
 To ensure our attention weights provided meaningful biological insights, we conducted:
 * **Attention vs. Cox Ranking:** Compared model-learned gene rankings to traditional Cox hazard ratios.
