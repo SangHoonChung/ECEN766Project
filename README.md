@@ -5,10 +5,11 @@
 
 This repository contains the code, models, and experimental configurations for extending the DeepSurv framework with a feature-level attention mechanism. This work aims to bridge the gap between predictive performance and biological interpretability in deep survival modeling for precision oncology.
 
-### Abstract
-Survival models are fundamental tools in clinical medicine for quantifying how a patient's clinical and molecular characteristics influence time-to-event outcomes. While deep neural extensions of the Cox proportional hazards model, such as DeepSurv, improve predictive flexibility by capturing nonlinear interactions in high-dimensional gene-expression data, they often function as black boxes. 
 
-We propose an attention-enhanced DeepSurv framework that introduces a feature-level attention mechanism to improve transparency. The model jointly optimizes attention weights and Cox partial likelihood to provide adaptive gene-importance scores while preserving predictive performance.
+### 📝 Abstract
+Survival analysis is fundamental in precision oncology for modeling time-to-event outcomes using clinical and molecular data. While deep learning extensions of the Cox model, such as DeepSurv, improve predictive flexibility by capturing nonlinear interactions in high-dimensional gene-expression data, they operate as uninterpretable "black boxes." 
+
+In this project, we developed an **attention-enhanced DeepSurv framework** to bridge the gap between predictive performance and biological interpretability. We explored various attention mechanisms to provide adaptive, patient-specific gene-importance scores (feature weighting) while predicting survival risk. Our models were evaluated on the METABRIC breast cancer cohort against L2-regularized Cox PH and baseline DeepSurv models.
 
 ### Repository Contents
 This repository will include the following components:
@@ -17,18 +18,26 @@ This repository will include the following components:
 * **Training and evaluation scripts:** Support for GPU-accelerated training, dropout regularization, and batch normalization.
 * **Documentation for reproducibility:** Detailed guides to replicate experiments.
 
-### Dataset
-This study utilizes the **METABRIC** (Molecular Taxonomy of Breast Cancer International Consortium) dataset, a large-scale breast cancer cohort.
-* **Features:** Illumina microarray-based mRNA expression profiles for approximately 20,000 genes per patient.
-* **Outcomes:** Overall survival time (in months) and vital status.
 
-**Note:** Due to dataset size constraints, large-scale data (e.g., METABRIC gene-expression data) will be hosted via Zenodo, and the corresponding link will be provided. 
+### 🗂️ Dataset: METABRIC
+The model is trained and evaluated using the **Molecular Taxonomy of Breast Cancer International Consortium (METABRIC)** dataset.
+* **Patients:** 1,980 (after matching and processing)
+* **Features:** Top 3,000 most variable gene-expression features (from an original ~20,385)
+* **Outcomes:** Overall survival time (months) and censoring status (Death=1, Censored=0)
+* **Splitting:** Stratified 70% / 15% / 15% (Train / Validation / Test)
 
-### Methodology
-We evaluate three survival modeling approaches:
-1.  **Linear Baseline (Cox PH):** A standard Cox proportional hazards model where gene-expression features are directly used as covariates.
-2.  **Nonlinear Baseline (DeepSurv):** A multi-layer perceptron (MLP) replacing the linear predictor, optimized using the negative Cox partial likelihood.
-3.  **Proposed Model (Attention-DeepSurv):** Incorporates a feature-level attention module prior to the survival network to assign adaptive importance weights to gene-expression features. 
+**Note: Due to dataset size and access constraints, the raw METABRIC gene-expression data is not directly included in this repository. Please refer to the documentation for data access instructions.**
+
+### 🧠 Methodology & Architectures
+
+Our pipeline evaluates standard baselines and proposes three attention-based architectures to solve the "black box" problem:
+
+1. **Cox PH Baseline:** Traditional linear model with L2 regularization to handle high-dimensional ($p \gg n$) data.
+2. **DeepSurv Baseline:** Standard neural network optimized via the Cox partial log-likelihood.
+3. **Feature-Wise Self-Attention DeepSurv:** Attempted to use standard query-key-value self-attention. However, computing a $3000 \times 3000$ attention matrix caused Out-of-Memory (OOM) failures, proving unscalable for high-dimensional tabular omics data. 
+4. **Gated Attention DeepSurv:** Resolves the OOM issue by learning a single, patient-specific continuous gate value per gene ($g_i \in [0,1]$). The input is reweighted ($x' = g \odot x$) before being passed to the DeepSurv MLP.
+5. **Residual Gated Attention DeepSurv:** To combat the validation instability and overfitting observed in the Gated Attention model, this architecture introduces a residual skip connection. It fuses a gated branch with a residual branch, allowing the original gene signals to pass forward and stabilizing the training process.
+
 
 ### Evaluation & Interpretability
 * **Predictive Performance:** Evaluated using the concordance index (C-index).
@@ -46,7 +55,17 @@ Initial results evaluating the re-implemented models on the METABRIC cohort usin
 | Cox PH | Train | 0.8721 |
 | Cox PH | Validation | 0.6333 |
 | Cox PH | Test | 0.6500 |
+### 🔬 Biological Interpretability
+To ensure our attention weights provided meaningful biological insights, we conducted:
+* **Attention vs. Cox Ranking:** Compared model-learned gene rankings to traditional Cox hazard ratios.
+* **Perturbation Validation:** Shuffled top candidate genes to measure the resulting drop in C-index (predictive influence).
+* **Pathway Enrichment Analysis (ORA):** Evaluated top attention-ranked genes against KEGG, GO, Reactome, and MSigDB Hallmark databases to identify biologically meaningful pathway enrichment.
 
+### ⚙️ Repository Contents
+* Data preprocessing and survival outcome construction scripts
+* PyTorch implementations of Cox PH, DeepSurv, Gated Attention, and Residual Gated Attention models
+* Training, evaluation, and interpretability analysis notebooks
+  
 ### Team
 * **Irene Tsai** - Data and Statistical Modeling Lead 
 * **Ananya Patel** - Deep Learning and Attention Model Lead 
